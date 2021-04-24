@@ -14,9 +14,10 @@ import frc.robot.sensors.ballfeedersensor.BallFeederSensorBase;
 import frc.robot.sensors.ballfeedersensor.MockBallFeederSensor;
 import frc.robot.sensors.ballfeedersensor.RealBallFeederSensor;
 import frc.robot.sensors.camera.*;
-import frc.robot.sensors.gyro.MockNavXGyroSensor;
-import frc.robot.sensors.gyro.NavXGyroSensor;
+import frc.robot.sensors.gyro.Gyro;
+import frc.robot.sensors.gyro.MockGyro;
 import frc.robot.sensors.gyro.RealNavXGyroSensor;
+import frc.robot.sensors.gyro.RomiGyro;
 import frc.robot.sensors.limelightcamera.LimeLightCameraBase;
 import frc.robot.sensors.limelightcamera.MockLimeLightCamera;
 import frc.robot.sensors.limelightcamera.RealLimelightCamera;
@@ -33,7 +34,7 @@ public class SensorsContainer {
   private Camera m_camera0;
   private Camera m_camera1;
   private LimeLightCameraBase m_limelightCameraBase;
-  private NavXGyroSensor m_gyro;
+  private Gyro m_gyro;
   private UltrasonicSensor m_powerCellDetector;
 
   public SensorsContainer() {
@@ -42,9 +43,12 @@ public class SensorsContainer {
     if (sensorConfig.hasPath("navx")) {
       System.out.println("Using real NavX Gyro sensor");
       m_gyro = new RealNavXGyroSensor();
+    } else if (sensorConfig.hasPath("RomiGyro")) {
+      System.out.println("Using RomiGyro");
+      m_gyro = new RomiGyro();
     } else {
       System.out.println("Using mock Navx Gyro sensor");
-      m_gyro = new MockNavXGyroSensor();
+      m_gyro = new MockGyro();
     }
 
     if (sensorConfig.hasPath("sensors.ballFeederSensor")) {
@@ -85,7 +89,7 @@ public class SensorsContainer {
     }
   }
 
-  public NavXGyroSensor getNavXGyro() {
+  public Gyro getGyro() {
     return m_gyro;
   }
 

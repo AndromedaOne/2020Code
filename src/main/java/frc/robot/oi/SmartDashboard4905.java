@@ -18,6 +18,8 @@ import frc.robot.commands.ToggleLimelightLED;
 import frc.robot.commands.TuneShooterFeedForward;
 import frc.robot.commands.pidcommands.MoveUsingEncoderTester;
 import frc.robot.commands.pidcommands.TurnToCompassHeadingTester;
+import frc.robot.groupcommands.RomiCommands.RomiChallenge1;
+import frc.robot.groupcommands.RomiCommands.RomiExamplePath;
 import frc.robot.groupcommands.athomechallengepathways.BarrelRacingPath;
 import frc.robot.groupcommands.athomechallengepathways.BouncePath;
 import frc.robot.groupcommands.athomechallengepathways.GalacticSearchPathA;
@@ -41,6 +43,7 @@ public class SmartDashboard4905 {
   public SmartDashboard4905(SubsystemsContainer subsystemsContainer, SensorsContainer sensorsContainer) {
 
     SmartDashboard.putData("DriveBackward", new DriveBackwardTimed(1, subsystemsContainer.getDrivetrain()));
+    SmartDashboard.putNumber("MoveUsingEncoderTester Distance To Move", 24);
     SmartDashboard.putData("MoveUsingEncoderTester", new MoveUsingEncoderTester(subsystemsContainer.getDrivetrain()));
 
     SmartDashboard.putData("TurnToCompassHeadingTester",
@@ -77,6 +80,9 @@ public class SmartDashboard4905 {
     SmartDashboard.putData("Hyper Drive Challenge", new HyperDriveChallenge(subsystemsContainer.getDrivetrain()));
     SmartDashboard.putData("Power Port Start", new PowerPortStart(subsystemsContainer.getDrivetrain(),
         subsystemsContainer.getShooter(), subsystemsContainer.getFeeder(), subsystemsContainer.getIntake()));
+
+    SmartDashboard.putData("RomiExamplePath", new RomiExamplePath(subsystemsContainer.getDrivetrain()));
+    SmartDashboard.putData("RomiChallenge1", new RomiChallenge1(subsystemsContainer.getDrivetrain()));
 
     SmartDashboard.putData("Run All feeder motors", new RunAllFeederMotors(subsystemsContainer.getFeeder()));
     SmartDashboard.putData("Tune Shooter Feed Forward", new TuneShooterFeedForward(subsystemsContainer.getShooter()));

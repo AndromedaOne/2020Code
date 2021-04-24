@@ -56,7 +56,6 @@ public class MoveUsingEncoder extends PIDCommand4905 {
     addRequirements(drivetrain);
   }
 
-  @Deprecated
   public MoveUsingEncoder(DriveTrain drivetrain, double distance, double maxOutput) {
     this(drivetrain, distance, false, 0);
     m_maxOutput = maxOutput;
@@ -110,7 +109,6 @@ public class MoveUsingEncoder extends PIDCommand4905 {
   }
 
   public void end(boolean interrupted) {
-    Trace.getInstance().logCommandStop(this);
     super.end(interrupted);
     m_driveTrain.stop();
     Trace.getInstance().logCommandStop(this);

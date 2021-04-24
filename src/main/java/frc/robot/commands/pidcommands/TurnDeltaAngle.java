@@ -12,8 +12,8 @@ import com.typesafe.config.Config;
 import frc.robot.Config4905;
 import frc.robot.Robot;
 import frc.robot.pidcontroller.PIDCommand4905;
-import frc.robot.pidcontroller.PIDController4905;
-import frc.robot.sensors.gyro.NavXGyroSensor;
+import frc.robot.pidcontroller.PIDController4905SampleStop;
+import frc.robot.sensors.gyro.Gyro;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -22,7 +22,7 @@ public class TurnDeltaAngle extends PIDCommand4905 {
   private double m_deltaTurnAngle;
   private double m_targetAngle;
   Config pidConfig = Config4905.getConfig4905().getCommandConstantsConfig();
-  private NavXGyroSensor m_gyro;
+  private Gyro m_gyro;
 
   /**
    * Creates a new TurnDeltaAngle.
@@ -30,9 +30,9 @@ public class TurnDeltaAngle extends PIDCommand4905 {
   public TurnDeltaAngle(double deltaTurnAngle) {
     super(
         // The controller that the command will use
-        new PIDController4905("TurnDeltaAngle", 0, 0, 0, 0),
+        new PIDController4905SampleStop("TurnDeltaAngle", 0, 0, 0, 0),
         // This should return the measurement
-        Robot.getInstance().getSensorsContainer().getNavXGyro()::getZAngle,
+        Robot.getInstance().getSensorsContainer().getGyro()::getZAngle,
         // This should return the setpoint (can also be a constant)
         0,
         // This uses the output
@@ -45,7 +45,7 @@ public class TurnDeltaAngle extends PIDCommand4905 {
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
     m_deltaTurnAngle = deltaTurnAngle;
-    m_gyro = Robot.getInstance().getSensorsContainer().getNavXGyro();
+    m_gyro = Robot.getInstance().getSensorsContainer().getGyro();
     getController().setP(pidConfig.getDouble("GyroPIDCommands.TurningPTerm"));
     getController().setI(pidConfig.getDouble("GyroPIDCommands.TurningITerm"));
     getController().setD(pidConfig.getDouble("GyroPIDCommands.TurningDTerm"));

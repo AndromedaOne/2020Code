@@ -21,7 +21,7 @@ public class DiagonalPathGeneratorTests {
     List<CommandBase> m_commands;
 
     public DiagonalPathGeneratorTester(WaypointsBase waypoints, Waypoint initialWaypoint) {
-      super(waypoints, initialWaypoint, false);
+      super("DiagonalPathGeneratorTester", waypoints, initialWaypoint, false);
       m_commands = new ArrayList<CommandBase>();
     }
 

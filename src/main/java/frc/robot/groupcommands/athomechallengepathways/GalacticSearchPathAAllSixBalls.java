@@ -31,8 +31,8 @@ public class GalacticSearchPathAAllSixBalls extends SequentialCommandGroup {
   public GalacticSearchPathAAllSixBalls(DriveTrain driveTrain, IntakeBase intake) {
     Waypoint initialPoint = AtHomeChallengePoints.C1;
     double maxOutput = 0.5;
-    PathGeneratorBase diagonalPathGenerator = new DriveTrainDiagonalPathGenerator(new GalacticSearchWaypoints(),
-        driveTrain, initialPoint, maxOutput);
+    PathGeneratorBase diagonalPathGenerator = new DriveTrainDiagonalPathGenerator(getClass().getSimpleName(),
+        new GalacticSearchWaypoints(), driveTrain, initialPoint, maxOutput, false, false);
     addCommands(
         new ParallelDeadlineGroup(diagonalPathGenerator.getPath(), new DeployAndRunIntake(intake, () -> false)));
   }

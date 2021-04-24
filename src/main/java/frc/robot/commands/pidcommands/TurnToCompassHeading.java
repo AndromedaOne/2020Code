@@ -32,7 +32,7 @@ public class TurnToCompassHeading extends PIDCommand4905 {
         // The controller that the command will use
         new PIDController4905SampleStop("TurnToCompassHeading", 0, 0, 0, 0),
         // This should return the measurement
-        Robot.getInstance().getSensorsContainer().getNavXGyro()::getCompassHeading,
+        Robot.getInstance().getSensorsContainer().getGyro()::getCompassHeading,
         // This should return the setpoint (can also be a constant)
         compassHeading,
         // This uses the output

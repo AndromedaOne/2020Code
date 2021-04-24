@@ -1,6 +1,8 @@
 package frc.robot.pathgeneration.pathgenerators;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.PauseRobot;
 import frc.robot.commands.pidcommands.MoveUsingEncoder;
 import frc.robot.commands.pidcommands.TurnToCompassHeading;
 import frc.robot.pathgeneration.waypoints.Waypoint;
@@ -11,26 +13,14 @@ public class DriveTrainDiagonalPathGenerator extends DiagonalPathGenerator {
 
   private DriveTrain m_driveTrain;
   private double m_maxOutput;
+  private boolean m_pauseAfterTurn = false;
 
-  public DriveTrainDiagonalPathGenerator(WaypointsBase waypoints, DriveTrain driveTrain, Waypoint initialWaypoint,
-      double maxOutputs, boolean useReverse) {
-    super(waypoints, initialWaypoint, useReverse);
+  public DriveTrainDiagonalPathGenerator(String pathName, WaypointsBase waypoints, DriveTrain driveTrain,
+      Waypoint initialWaypoint, double maxOutputs, boolean useReverse, boolean pauseAfterTurn) {
+    super(pathName, waypoints, initialWaypoint, useReverse);
     m_maxOutput = maxOutputs;
     m_driveTrain = driveTrain;
-  }
-
-  public DriveTrainDiagonalPathGenerator(WaypointsBase waypoints, DriveTrain driveTrain, double maxOutput) {
-    this(waypoints, driveTrain, new Waypoint(0, 0), maxOutput, false);
-  }
-
-  public DriveTrainDiagonalPathGenerator(WaypointsBase waypoints, DriveTrain driveTrain, double maxOutput,
-      boolean useReverse) {
-    this(waypoints, driveTrain, new Waypoint(0, 0), maxOutput, useReverse);
-  }
-
-  public DriveTrainDiagonalPathGenerator(WaypointsBase waypoints, DriveTrain driveTrain, Waypoint initialWaypoint,
-      double maxOutputs) {
-    this(waypoints, driveTrain, initialWaypoint, maxOutputs, false);
+    m_pauseAfterTurn = pauseAfterTurn;
   }
 
   /**
@@ -38,7 +28,10 @@ public class DriveTrainDiagonalPathGenerator extends DiagonalPathGenerator {
    */
   @Override
   protected CommandBase createTurnCommand(double angle) {
-    return new TurnToCompassHeading(angle);
+    if (m_pauseAfterTurn) {
+      return (new SequentialCommandGroup(new TurnToCompassHeading(angle), new PauseRobot(10, m_driveTrain)));
+    }
+    return (new TurnToCompassHeading(angle));
   }
 
   /**

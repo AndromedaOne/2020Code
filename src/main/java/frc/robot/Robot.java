@@ -89,11 +89,11 @@ public class Robot extends TimedRobot {
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    m_sensorsContainer.getNavXGyro().updateSmartDashboardReadings();
+    m_sensorsContainer.getGyro().updateSmartDashboardReadings();
     m_sensorsContainer.getLimeLight().updateSmartDashboardReadings();
     m_sensorsContainer.getBallFeederSensor().isThereBall();
-    SmartDashboard.putNumber("Shooter Speed", m_subsystemContainer.getShooter().getShooterWheelVelocity());
     SmartDashboard.putNumber("Powercell Detector", m_sensorsContainer.getPowercellDetector().getDistanceInches());
+    m_subsystemContainer.getDrivetrain().updateSmartDashboardReadings();
   }
 
   /**

@@ -29,9 +29,8 @@ public class BarrelRacingPath extends SequentialCommandGroup {
   }
 
   public BarrelRacingPath(DriveTrain driveTrain) {
-    System.out.println("Generating Path For Barrel Racing");
-    PathGeneratorBase pathGenerator = new DriveTrainDiagonalPathGenerator(new BarrelWaypoints(), driveTrain,
-        initialPoint, maximumPower, true);
+    PathGeneratorBase pathGenerator = new DriveTrainDiagonalPathGenerator(getClass().getSimpleName(),
+        new BarrelWaypoints(), driveTrain, initialPoint, maximumPower, true, false);
     addCommands(pathGenerator.getPath());
   }
 }

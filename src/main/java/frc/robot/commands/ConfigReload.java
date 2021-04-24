@@ -16,7 +16,7 @@ public class ConfigReload extends CommandBase {
 
   @Override
   public void execute() {
-    Config4905.reload();
+    Config4905.getConfig4905().reload();
   }
 
   @Override

@@ -21,6 +21,7 @@ import frc.robot.subsystems.climber.MockClimber;
 import frc.robot.subsystems.climber.RealClimber;
 import frc.robot.subsystems.drivetrain.DriveTrain;
 import frc.robot.subsystems.drivetrain.MockDriveTrain;
+import frc.robot.subsystems.drivetrain.RomiDriveTrain;
 import frc.robot.subsystems.drivetrain.SparkMaxDriveTrain;
 import frc.robot.subsystems.drivetrain.TalonSRXDriveTrain;
 import frc.robot.subsystems.feeder.FeederBase;
@@ -72,6 +73,9 @@ public class SubsystemsContainer {
       } else if (Config4905.getConfig4905().getDrivetrainConfig().getString("motorController").equals("talonSRX")) {
         System.out.println("Using real talonSRX Drive Train");
         m_driveTrain = new TalonSRXDriveTrain();
+      } else if (Config4905.getConfig4905().getDrivetrainConfig().getString("motorController").equals("romiDrive")) {
+        System.out.println("Using Romi drive train");
+        m_driveTrain = new RomiDriveTrain();
       } else {
         String drivetrainType = Config4905.getConfig4905().getDrivetrainConfig().getString("motorController");
         throw (new RuntimeException("ERROR: Unknown drivetrain type: " + drivetrainType + " in drivetrain.conf"));

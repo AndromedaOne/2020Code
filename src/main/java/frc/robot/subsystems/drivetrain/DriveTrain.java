@@ -17,9 +17,7 @@ public abstract class DriveTrain extends SubsystemBase {
   public DriveTrain() {
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  public void updateSmartDashboardReadings() {
     SmartDashboard.putNumber("RobotPositionInches", getRobotPositionInches());
     SmartDashboard.putNumber("RobotVelocityInches", getRobotVelocityInches());
   }

@@ -13,11 +13,11 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.Config4905;
 import frc.robot.Robot;
-import frc.robot.sensors.gyro.NavXGyroSensor;
+import frc.robot.sensors.gyro.Gyro;
 
 public abstract class RealDriveTrain extends DriveTrain {
   // Gyro variables
-  private NavXGyroSensor navX;
+  private Gyro navX;
   private double savedAngle = 0;
   private double newRotateValue = 0;
   private boolean gyroCorrect = false;
@@ -29,7 +29,7 @@ public abstract class RealDriveTrain extends DriveTrain {
 
   public RealDriveTrain() {
     Config drivetrainConfig = Config4905.getConfig4905().getDrivetrainConfig();
-    navX = Robot.getInstance().getSensorsContainer().getNavXGyro();
+    navX = Robot.getInstance().getSensorsContainer().getGyro();
     kDelay = drivetrainConfig.getDouble("gyrocorrect.kdelay");
     kProportion = drivetrainConfig.getDouble("gyrocorrect.kproportion");
     System.out.println("kProportion = " + kProportion);
