@@ -157,7 +157,5 @@ gradle-app.setting
 bin/
 imgui.ini
 
-# Igmore KDiff3 files
-*.orig
 
 # End of https://www.gitignore.io/api/c++,java,linux,macos,gradle,windows,visualstudiocode
