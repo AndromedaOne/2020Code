@@ -5,7 +5,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import frc.robot.Robot;
 import frc.robot.commands.DeployAndRunIntake;
-import frc.robot.pathgeneration.pathgenerators.DriveTrainDiagonalPathGenerator;
+import frc.robot.pathgeneration.pathgenerators.PathGeneratorBase;
+import frc.robot.pathgeneration.pathgenerators.TwoDDriveTrainPathGenerator;
 import frc.robot.pathgeneration.waypoints.Waypoint;
 import frc.robot.pathgeneration.waypoints.WaypointsBase;
 import frc.robot.telemetries.Trace;
@@ -59,15 +60,15 @@ public class GalacticSearchPathB extends CommandBase {
   public void end(final boolean interrupted) {
     final double distanceToPowercell = sumOfUltrasonicDistances / count;
     if (distanceToPowercell <= 30) {
-      DriveTrainDiagonalPathGenerator red = new DriveTrainDiagonalPathGenerator(new RedPath(),
-          Robot.getInstance().getSubsystemsContainer().getDrivetrain(), startPoint, maxSpeed);
+      PathGeneratorBase red = new TwoDDriveTrainPathGenerator("GalacticSearchPathBRed.wpilib.json",
+          Robot.getInstance().getSubsystemsContainer().getDrivetrain(), "GalacticSearchBRed");
       CommandBase redPath = red.getPath();
       CommandBase cmd = new ParallelDeadlineGroup(redPath,
           new DeployAndRunIntake(Robot.getInstance().getSubsystemsContainer().getIntake(), () -> false));
       CommandScheduler.getInstance().schedule(cmd);
     } else {
-      DriveTrainDiagonalPathGenerator blue = new DriveTrainDiagonalPathGenerator(new BluePath(),
-          Robot.getInstance().getSubsystemsContainer().getDrivetrain(), startPoint, maxSpeed);
+      PathGeneratorBase blue = new TwoDDriveTrainPathGenerator("GalacticSearchPathBBlue.wpilib.json",
+          Robot.getInstance().getSubsystemsContainer().getDrivetrain(), "GalacticSearchBBlue");
       CommandBase bluePath = blue.getPath();
       CommandBase cmdblue = new ParallelDeadlineGroup(bluePath,
           new DeployAndRunIntake(Robot.getInstance().getSubsystemsContainer().getIntake(), () -> false));

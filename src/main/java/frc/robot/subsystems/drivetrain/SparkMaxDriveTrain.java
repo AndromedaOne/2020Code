@@ -28,6 +28,7 @@ public class SparkMaxDriveTrain extends RealDriveTrain {
   private final SpeedControllerGroup m_rightmotors;
 
   private double ticksPerInch;
+  public static final double metersPerInch = 0.0254;
 
   public SparkMaxDriveTrain() {
     Config drivetrainConfig = Config4905.getConfig4905().getDrivetrainConfig();
@@ -66,6 +67,7 @@ public class SparkMaxDriveTrain extends RealDriveTrain {
       encoders++;
       encoderPositionAvg += m_backRight.getEncoderPositionTicks();
     }
+
     if (encoders > 0) {
       encoderPositionAvg = encoderPositionAvg / (ticksPerInch * encoders);
     }
@@ -106,5 +108,47 @@ public class SparkMaxDriveTrain extends RealDriveTrain {
   @Override
   protected SpeedControllerGroup getRightSpeedControllerGroup() {
     return m_rightmotors;
+  }
+
+  @Override
+  protected double getLeftRateMetersPerSecond() {
+    return ticksPerMinuteToMetersPerSecond(
+        (m_backLeft.getEncoderVelocityTicks() + m_frontLeft.getEncoderVelocityTicks()) * 0.5);
+  }
+
+  @Override
+  protected double getRightRateMetersPerSecond() {
+    return ticksPerMinuteToMetersPerSecond(
+        (m_backRight.getEncoderVelocityTicks() + m_frontRight.getEncoderVelocityTicks()) * 0.5);
+  }
+
+  @Override
+  protected double getLeftSideMeters() {
+    double averageTicks = (m_backLeft.getEncoderPositionTicks() + m_frontLeft.getEncoderPositionTicks()) * 0.5;
+    double averageMeters = ticksToMeters(averageTicks);
+    return averageMeters;
+  }
+
+  @Override
+  protected double getRightsSideMeters() {
+    double averageTicks = (m_backRight.getEncoderPositionTicks() + m_frontRight.getEncoderPositionTicks()) * 0.5;
+    double averageMeters = ticksToMeters(averageTicks);
+    return averageMeters;
+  }
+
+  private double ticksToMeters(double ticks) {
+    return ticks * (1.0 / ticksPerInch) * metersPerInch;
+  }
+
+  private double ticksPerMinuteToMetersPerSecond(double ticksPerMinute) {
+    return ticksToMeters(ticksPerMinute * (1.0 / 60));
+  }
+
+  @Override
+  protected void resetEncoders() {
+    m_backLeft.getEncoder().setPosition(0);
+    m_frontLeft.getEncoder().setPosition(0);
+    m_backRight.getEncoder().setPosition(0);
+    m_frontRight.getEncoder().setPosition(0);
   }
 }

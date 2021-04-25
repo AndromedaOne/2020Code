@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Function;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
@@ -58,7 +59,7 @@ import frc.robot.Robot;
 // file so that at least something will be written out before the robot it turned 
 // off.
 public class Trace {
-  private String m_basePathOfTraceDirs = "/home/lvuser/traceLogs";
+  public static String basePathOfTraceDirs = "/home/lvuser/traceLogs";
   private static String m_traceDirNumberFile = ".traceNumb";
   private String m_pathOfTraceDir;
   private static String m_consoleOutput = "ConsoleOutput";
@@ -73,13 +74,39 @@ public class Trace {
   private BufferedWriter m_commandTraceWriter;
   private static int m_dirNumb = 0;
 
-  private class TraceEntry {
+  public static <T> Function<TracePair<T>[], String> defaultFormatter(long startTime) {
+    return (values -> {
+      long correctedTime = System.currentTimeMillis() - startTime;
+      String line = new String(String.valueOf(correctedTime));
+      for (TracePair<T> entry : values) {
+        line += ",\t" + entry.getValue();
+      }
+      return line;
+    });
+  }
+
+  public static <T> Function<TracePair<T>[], String> defaultHeaderFormatter() {
+    return (values -> {
+      String line = new String("Time");
+      for (TracePair<T> pair : values) {
+        line += "," + pair.getColumnName();
+      }
+      return line;
+    });
+  }
+
+  private class TraceEntry<T> {
     private BufferedWriter m_file;
     private int m_numbOfValues;
+    private Function<TracePair<T>[], String> formatter;
+    private Function<TracePair<T>[], String> headerFormatter;
 
-    public TraceEntry(BufferedWriter file, int numbOfValues) {
+    public TraceEntry(BufferedWriter file, int numbOfValues, Function<TracePair<T>[], String> formatter,
+        Function<TracePair<T>[], String> headerFormatter) {
       m_file = file;
       m_numbOfValues = numbOfValues;
+      this.formatter = formatter;
+      this.headerFormatter = headerFormatter;
     }
 
     public BufferedWriter getFile() {
@@ -89,6 +116,15 @@ public class Trace {
     public long getNumbOfValues() {
       return (m_numbOfValues);
     }
+
+    public String format(TracePair<T>... tracePair) {
+      return formatter.apply(tracePair);
+    }
+
+    public String formatHeader(TracePair<T>... header) {
+      return headerFormatter.apply(header);
+    }
+
   }
 
   public synchronized static Trace getInstance() {
@@ -130,22 +166,22 @@ public class Trace {
 
   private void createNewTraceDir() {
     try {
-      File directory = new File(m_basePathOfTraceDirs);
+      File directory = new File(basePathOfTraceDirs);
       if (!directory.exists()) {
         if (!directory.mkdir()) {
-          System.err.println("ERROR: failed to create directory " + m_basePathOfTraceDirs + " for tracing data.");
-          m_basePathOfTraceDirs = null;
+          System.err.println("ERROR: failed to create directory " + basePathOfTraceDirs + " for tracing data.");
+          basePathOfTraceDirs = null;
           m_pathOfTraceDir = null;
           return;
         }
       }
       // open the trace dir number file to retrieve the number to concatenate
       // to the trace dir
-      String traceNumFileName = m_basePathOfTraceDirs + "/" + m_traceDirNumberFile;
+      String traceNumFileName = basePathOfTraceDirs + "/" + m_traceDirNumberFile;
       File traceNumbFile = new File(traceNumFileName);
       if (!traceNumbFile.exists()) {
         System.out.println("Trace numb file does not exist");
-        m_pathOfTraceDir = m_basePathOfTraceDirs + "/" + "trace0";
+        m_pathOfTraceDir = basePathOfTraceDirs + "/" + "trace0";
       } else {
         System.out.println("Found trace numb file: " + traceNumFileName);
         BufferedReader reader = new BufferedReader(new FileReader(traceNumbFile));
@@ -154,24 +190,24 @@ public class Trace {
         traceNumbFile.delete();
         if (line == null) {
           System.err
-              .println("ERROR: failed to read trace file number file: " + m_basePathOfTraceDirs + m_traceDirNumberFile);
+              .println("ERROR: failed to read trace file number file: " + basePathOfTraceDirs + m_traceDirNumberFile);
           m_pathOfTraceDir = null;
           return;
         }
-        m_pathOfTraceDir = m_basePathOfTraceDirs + "/trace" + line;
+        m_pathOfTraceDir = basePathOfTraceDirs + "/trace" + line;
         m_dirNumb = Integer.parseInt(line);
       }
       File traceDir = new File(m_pathOfTraceDir);
       if (!traceDir.exists()) {
         if (!traceDir.mkdirs()) {
           System.err.println("ERROR: failed to create directory " + m_pathOfTraceDir + " for tracing data.");
-          m_basePathOfTraceDirs = null;
+          basePathOfTraceDirs = null;
           m_pathOfTraceDir = null;
           return;
         }
       }
 
-      Path link = Paths.get(m_basePathOfTraceDirs + "/latest");
+      Path link = Paths.get(basePathOfTraceDirs + "/latest");
       if (Files.exists(link)) {
         Files.delete(link);
       }
@@ -179,7 +215,7 @@ public class Trace {
 
       FileWriter fstream = new FileWriter(traceNumFileName, false);
       BufferedWriter dirNumbFile = new BufferedWriter(fstream);
-      System.out.println("Created trace file " + m_basePathOfTraceDirs + m_traceDirNumberFile);
+      System.out.println("Created trace file " + basePathOfTraceDirs + m_traceDirNumberFile);
       ++m_dirNumb;
       dirNumbFile.write(Integer.toString(m_dirNumb));
       dirNumbFile.close();
@@ -206,25 +242,29 @@ public class Trace {
     if (m_pathOfTraceDir == null) {
       return;
     }
-    TraceEntry traceEntry = getTraceEntry(fileName, header);
+    TraceEntry<T> traceEntry = registerTraceEntry(fileName, header);
     addEntry(traceEntry, header);
   }
 
   @SafeVarargs
-  private final synchronized <T> TraceEntry getTraceEntry(String fileName, TracePair<T>... header) {
-    TraceEntry traceEntry = null;
+  public final synchronized <T> TraceEntry<T> registerTraceEntry(String fileName, TracePair<T>... header) {
+    return registerTraceEntry(fileName, defaultFormatter(m_startTime), defaultHeaderFormatter(), header);
+  }
+
+  @SafeVarargs
+  public final synchronized <T> TraceEntry<T> registerTraceEntry(String fileName,
+      Function<TracePair<T>[], String> formatter, Function<TracePair<T>[], String> headerFormatter,
+      TracePair<T>... header) {
+    TraceEntry<T> traceEntry = null;
     try {
       if (!m_traces.containsKey(fileName)) {
         BufferedWriter outputFile = null;
         String fullFileName = new String(m_pathOfTraceDir + "/" + fileName + ".csv");
         FileWriter fstream = new FileWriter(fullFileName, false);
         outputFile = new BufferedWriter(fstream);
-        traceEntry = new TraceEntry(outputFile, header.length);
+        traceEntry = new TraceEntry<T>(outputFile, header.length, formatter, headerFormatter);
         m_traces.put(fileName, traceEntry);
-        String line = new String("Time");
-        for (TracePair<T> pair : header) {
-          line += "," + pair.getColumnName();
-        }
+        String line = traceEntry.formatHeader(header);
         outputFile.write(line);
         outputFile.newLine();
         System.out.println("Opened trace file " + m_pathOfTraceDir + "/" + fileName);
@@ -257,10 +297,7 @@ public class Trace {
         throw (new Exception(err));
       }
       long correctedTime = System.currentTimeMillis() - m_startTime;
-      String line = new String(String.valueOf(correctedTime));
-      for (TracePair<T> entry : values) {
-        line += ",\t" + entry.getValue();
-      }
+      String line = traceEntry.format(values);
       traceEntry.getFile().write(line);
       traceEntry.getFile().newLine();
     } catch (IOException e) {

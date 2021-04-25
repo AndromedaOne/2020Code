@@ -2,6 +2,8 @@ package frc.robot.pathgeneration.waypoints;
 
 import java.awt.geom.Point2D;
 
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+
 public class Waypoint extends Point2D {
   private double m_x;
   private double m_y;
@@ -9,6 +11,10 @@ public class Waypoint extends Point2D {
   public Waypoint(double x, double y) {
     m_x = x;
     m_y = y;
+  }
+
+  public Waypoint(Pose2d pose) {
+    this(pose.getTranslation().getX(), pose.getTranslation().getY());
   }
 
   public double getX() {

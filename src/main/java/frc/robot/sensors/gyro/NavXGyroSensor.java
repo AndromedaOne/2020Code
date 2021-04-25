@@ -1,6 +1,9 @@
 package frc.robot.sensors.gyro;
 
-public abstract class NavXGyroSensor {
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
+
+public abstract class NavXGyroSensor implements Gyro {
 
   /**
    * Gets the Z angle and subtracts the initial angle member variable from it.
@@ -19,4 +22,9 @@ public abstract class NavXGyroSensor {
   public abstract double getCompassHeading();
 
   public abstract void updateSmartDashboardReadings();
+
+  public Rotation2d getRotation2d() {
+    double zAngle = -getZAngle();
+    return Rotation2d.fromDegrees(zAngle);
+  }
 }

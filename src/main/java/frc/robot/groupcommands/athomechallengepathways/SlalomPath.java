@@ -8,8 +8,8 @@
 package frc.robot.groupcommands.athomechallengepathways;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.pathgeneration.pathgenerators.DriveTrainDiagonalPathGenerator;
 import frc.robot.pathgeneration.pathgenerators.PathGeneratorBase;
+import frc.robot.pathgeneration.pathgenerators.TwoDDriveTrainPathGenerator;
 import frc.robot.pathgeneration.waypoints.Waypoint;
 import frc.robot.pathgeneration.waypoints.WaypointsBase;
 import frc.robot.subsystems.drivetrain.DriveTrain;
@@ -37,8 +37,7 @@ public class SlalomPath extends SequentialCommandGroup {
   }
 
   public SlalomPath(DriveTrain driveTrain) {
-    PathGeneratorBase pathGenerator = new DriveTrainDiagonalPathGenerator(new SlalomWaypoints(), driveTrain,
-        initialPoint, maximumPower);
+    PathGeneratorBase pathGenerator = new TwoDDriveTrainPathGenerator("Slalom.wpilib.json", driveTrain, "Slalom");
     addCommands(pathGenerator.getPath());
   }
 }

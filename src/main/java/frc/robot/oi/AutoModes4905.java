@@ -114,8 +114,7 @@ public class AutoModes4905 {
         m_autoChooser.addOption("14: galactic Search Path B", new GalacticSearchPathB());
         m_autoChooser.addOption("15: AutoNav: Barrel", new BarrelRacingPath(driveTrain));
         m_autoChooser.addOption("16: AutoNav: Slalom", new SlalomPath(driveTrain));
-        m_autoChooser.addOption("17: AutoNav: Bounce", new BouncePath(driveTrain, intake));
-
+        m_autoChooser.addOption("16: AutoNav: Bounce", new BouncePath(driveTrain, intake));
                                                                 
           SmartDashboard.putData("autoModes", m_autoChooser);
     // @formatter:on

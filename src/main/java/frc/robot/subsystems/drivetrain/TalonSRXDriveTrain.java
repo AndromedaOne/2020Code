@@ -106,4 +106,35 @@ public class TalonSRXDriveTrain extends RealDriveTrain {
   protected SpeedControllerGroup getRightSpeedControllerGroup() {
     return m_rightmotors;
   }
+
+  @Override
+  protected double getLeftRateMetersPerSecond() {
+    return (m_backLeft.getEncoderVelocityTicks() + m_frontLeft.getEncoderVelocityTicks()) * 0.5;
+  }
+
+  @Override
+  protected double getRightRateMetersPerSecond() {
+    return (m_backRight.getEncoderVelocityTicks() + m_frontRight.getEncoderVelocityTicks()) * 0.5;
+  }
+
+  @Override
+  protected double getLeftSideMeters() {
+    // TODO Auto-generated method stub
+    double averageTicks = (m_backLeft.getEncoderPositionTicks() + m_frontLeft.getEncoderPositionTicks());
+    double averageMeters = averageTicks * ticksPerInch * SparkMaxDriveTrain.metersPerInch;
+    return averageMeters;
+  }
+
+  @Override
+  protected double getRightsSideMeters() {
+    // TODO Auto-generated method stub
+    double averageTicks = (m_frontLeft.getEncoderPositionTicks() + m_frontRight.getEncoderPositionTicks());
+    double averageMeters = averageTicks * ticksPerInch * SparkMaxDriveTrain.metersPerInch;
+    return averageMeters;
+  }
+
+  @Override
+  protected void resetEncoders() {
+    throw new RuntimeException("Need to fill in the method ot reset encoders in talonsrx drivetrain");
+  }
 }

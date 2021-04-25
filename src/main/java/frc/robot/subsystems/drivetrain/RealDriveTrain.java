@@ -10,7 +10,12 @@ package frc.robot.subsystems.drivetrain;
 import com.typesafe.config.Config;
 
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import frc.robot.Config4905;
 import frc.robot.Robot;
 import frc.robot.sensors.gyro.NavXGyroSensor;
@@ -26,6 +31,8 @@ public abstract class RealDriveTrain extends DriveTrain {
   private double kProportion = 0.0;
   // the robot's main drive
   private DifferentialDrive m_drive;
+  private DifferentialDriveOdometry m_odometry;
+  private int m_rightSideInvertedMultiplier = -1;
 
   public RealDriveTrain() {
     Config drivetrainConfig = Config4905.getConfig4905().getDrivetrainConfig();
@@ -33,10 +40,30 @@ public abstract class RealDriveTrain extends DriveTrain {
     kDelay = drivetrainConfig.getDouble("gyrocorrect.kdelay");
     kProportion = drivetrainConfig.getDouble("gyrocorrect.kproportion");
     System.out.println("kProportion = " + kProportion);
+
   }
 
+  @Override
+  public void periodic() {
+    // Update the odometry in the periodic block
+    super.periodic();
+    double leftMeters = getLeftSideMeters();
+    double rightMeters = getRightsSideMeters();
+    m_odometry.update(navX.getRotation2d(), leftMeters, rightMeters);
+  }
+
+  private Timer timer;
+
   public void init() {
+    m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0));
     m_drive = new DifferentialDrive(getLeftSpeedControllerGroup(), getRightSpeedControllerGroup());
+    Config drivetrainConfig = Config4905.getConfig4905().getDrivetrainConfig();
+    if (drivetrainConfig.hasPath("rightSideInverted")) {
+      boolean rightSideInverted = drivetrainConfig.getBoolean("rightSideInverted");
+      m_drive.setRightSideInverted(rightSideInverted);
+      m_rightSideInvertedMultiplier = rightSideInverted ? -1 : 1;
+    }
+    resetEncoders();
   }
 
   /**
@@ -163,4 +190,50 @@ public abstract class RealDriveTrain extends DriveTrain {
   protected abstract SpeedControllerGroup getLeftSpeedControllerGroup();
 
   protected abstract SpeedControllerGroup getRightSpeedControllerGroup();
+
+  protected abstract double getLeftRateMetersPerSecond();
+
+  protected abstract double getRightRateMetersPerSecond();
+
+  @Override
+  public Pose2d getPose() {
+    Pose2d pose = m_odometry.getPoseMeters();
+    return pose;
+  }
+
+  @Override
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    DifferentialDriveWheelSpeeds wheelSpeeds = new DifferentialDriveWheelSpeeds(getLeftRateMetersPerSecond(),
+        getRightRateMetersPerSecond());
+    return wheelSpeeds;
+  }
+
+  /**
+   * Resets the odometry to the specified pose.
+   *
+   * @param pose The pose to which to set the odometry.
+   */
+  public void resetOdometry(Pose2d pose) {
+    resetEncoders();
+    m_odometry.resetPosition(pose, navX.getRotation2d());
+  }
+
+  @Override
+  public void tankDriveVolts(double leftVolts, double rightVolts) {
+    double averageSpeed = leftVolts + rightVolts;
+    if (averageSpeed < 0) {
+      Robot.getInstance().getSubsystemsContainer().getLEDs("LEDStringOne").setRGB(1.0, 1.0, 1.0);
+    } else {
+      Robot.getInstance().getSubsystemsContainer().getLEDs("LEDStringOne").setRGB(0, 0, 1.0);
+    }
+    getLeftSpeedControllerGroup().setVoltage(leftVolts);
+    getRightSpeedControllerGroup().setVoltage(m_rightSideInvertedMultiplier * rightVolts);
+    m_drive.feed();
+  }
+
+  protected abstract void resetEncoders();
+
+  protected abstract double getLeftSideMeters();
+
+  protected abstract double getRightsSideMeters();
 }
