@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import frc.robot.Config4905;
+import frc.robot.actuators.ServoMotor;
 import frc.robot.commands.DefaultFeederCommand;
 import frc.robot.commands.RetractAndStopIntake;
 import frc.robot.commands.TeleOpCommand;
@@ -48,6 +49,7 @@ public class SubsystemsContainer {
   ShooterBase m_shooter;
   Map<String, LEDs> m_leds;
   MockLEDs m_mockLEDs;
+  ServoMotor m_romiIntake;
 
   /**
    * The container responsible for setting all the subsystems to real or mock.
@@ -127,6 +129,11 @@ public class SubsystemsContainer {
     m_leds = Config4905.getConfig4905().getLEDConfig().entrySet().stream().map(entry -> entry.getKey().split("\\.")[0])
         .distinct().collect(Collectors.toMap(name -> name, name -> new RealLEDs(name)));
 
+    // 7. Romi Intake
+    if (Config4905.getConfig4905().doesHarvesterExist()) {
+      m_romiIntake = new ServoMotor(
+          Config4905.getConfig4905().getHarvesterConfig().getConfig("combineHarvesterServo").getInt("port"));
+    }
   }
 
   public DriveTrain getDrivetrain() {
@@ -151,6 +158,10 @@ public class SubsystemsContainer {
 
   public LEDs getLEDs(String name) {
     return m_leds.getOrDefault(name, m_mockLEDs);
+  }
+
+  public ServoMotor getRomiIntake() {
+    return m_romiIntake;
   }
 
   public void setDefaultCommands() {
