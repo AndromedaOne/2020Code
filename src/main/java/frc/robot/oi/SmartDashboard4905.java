@@ -121,7 +121,7 @@ public class SmartDashboard4905 {
     SequentialCommandGroup bouncePath = new SequentialCommandGroup(bouncePathGenerator1.getPath(),
         bouncePathGenerator2.getPath(), bouncePathGenerator3.getPath(), bouncePathGenerator4.getPath());
 
-    CommandBase enableIntakeAtTimes = new RunRomiIntakeAtTime(0.3, 1, 5, 11);
+    CommandBase enableIntakeAtTimes = new RunRomiIntakeAtTime(0.3, 2.5, 7.7, 11);
     ParallelCommandGroup bounceAndIntake = new ParallelCommandGroup(bouncePath, enableIntakeAtTimes);
 
     SmartDashboard.putData("RomiBounce", bounceAndIntake);
