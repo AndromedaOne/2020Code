@@ -10,10 +10,14 @@ package frc.robot.oi;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.CheckRomiVelocityConversionFactor;
 import frc.robot.commands.ConfigReload;
 import frc.robot.commands.DriveBackwardTimed;
+import frc.robot.commands.RunRomiIntakeAtTime;
 import frc.robot.commands.ToggleLimelightLED;
 import frc.robot.commands.pidcommands.MoveUsingEncoderTester;
 import frc.robot.commands.pidcommands.TurnToCompassHeadingTester;
@@ -117,7 +121,10 @@ public class SmartDashboard4905 {
     SequentialCommandGroup bouncePath = new SequentialCommandGroup(bouncePathGenerator1.getPath(),
         bouncePathGenerator2.getPath(), bouncePathGenerator3.getPath(), bouncePathGenerator4.getPath());
 
-    SmartDashboard.putData("RomiBounce", bouncePath);
+    CommandBase enableIntakeAtTimes = new RunRomiIntakeAtTime(0.3, 1, 5, 11);
+    ParallelCommandGroup bounceAndIntake = new ParallelCommandGroup(bouncePath, enableIntakeAtTimes);
+
+    SmartDashboard.putData("RomiBounce", bounceAndIntake);
 
     SmartDashboard.putData("CheckRomiVelocityConversionFactor",
         new CheckRomiVelocityConversionFactor(subsystemsContainer.getDrivetrain()));
