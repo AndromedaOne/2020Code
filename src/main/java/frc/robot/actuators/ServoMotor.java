@@ -19,11 +19,11 @@ public class ServoMotor {
   }
 
   public void runForward() {
-    m_servoMotor.setSpeed(0.5);
+    m_servoMotor.setSpeed(1.0);
   }
 
   public void runBackward() {
-    m_servoMotor.setSpeed(-0.5);
+    m_servoMotor.setSpeed(-1.0);
   }
 
   public void stop() {
