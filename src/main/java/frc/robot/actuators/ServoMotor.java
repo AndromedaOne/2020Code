@@ -1,6 +1,7 @@
 package frc.robot.actuators;
 
 import edu.wpi.first.wpilibj.Servo;
+import frc.robot.commands.TeleOpCommand;
 
 public class ServoMotor {
 
@@ -23,7 +24,9 @@ public class ServoMotor {
   }
 
   public void runBackward() {
-    m_servoMotor.setSpeed(-1.0);
+    if(TeleOpCommand.getMovingForward()){
+      m_servoMotor.setSpeed(-1.0);
+    }
   }
 
   public void stop() {
