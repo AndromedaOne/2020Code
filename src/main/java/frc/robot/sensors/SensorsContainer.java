@@ -14,6 +14,7 @@ import frc.robot.sensors.ballfeedersensor.BallFeederSensorBase;
 import frc.robot.sensors.ballfeedersensor.MockBallFeederSensor;
 import frc.robot.sensors.ballfeedersensor.RealBallFeederSensor;
 import frc.robot.sensors.camera.*;
+import frc.robot.sensors.gyro.ADGyro;
 import frc.robot.sensors.gyro.Gyro4905;
 import frc.robot.sensors.gyro.MockGyro;
 import frc.robot.sensors.gyro.RealNavXGyroSensor;
@@ -46,6 +47,9 @@ public class SensorsContainer {
     } else if (sensorConfig.hasPath("RomiGyro")) {
       System.out.println("Using RomiGyro");
       m_gyro = new RomiGyro();
+    } else if (sensorConfig.hasPath("ADGyro")) {
+      System.out.println("Using ADGyro");
+      m_gyro = new ADGyro();
     } else {
       System.out.println("Using mock Navx Gyro sensor");
       m_gyro = new MockGyro();
