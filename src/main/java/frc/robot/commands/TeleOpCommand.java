@@ -26,6 +26,11 @@ public class TeleOpCommand extends CommandBase {
   private Config m_drivetrainConfig = Config4905.getConfig4905().getDrivetrainConfig();
   private boolean m_slowMode = false;
   private SlowModeStates m_slowModeState = SlowModeStates.NOTSLOWRELEASED;
+  private static boolean movingForward = false;
+
+  public static boolean getMovingForward() {
+    return movingForward;
+  }
 
   private enum SlowModeStates {
     NOTSLOWPRESSED, NOTSLOWRELEASED, SLOWPRESSED, SLOWRELEASED
@@ -44,6 +49,7 @@ public class TeleOpCommand extends CommandBase {
   public void initialize() {
     m_drivetrainConfig = Config4905.getConfig4905().getDrivetrainConfig();
     m_driveTrain = Robot.getInstance().getSubsystemsContainer().getDrivetrain();
+    movingForward = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -95,6 +101,9 @@ public class TeleOpCommand extends CommandBase {
     rotateStickValue *= Math.sqrt(0.80);
 
     m_driveTrain.moveUsingGyro(forwardBackwardStickValue, -rotateStickValue, true, true);
+    movingForward = Math.abs(forwardBackwardStickValue) >= 0.1;
+
+    m_driveTrain.moveUsingGyro(forwardBackwardStickValue, -rotateStickValue, true, false);
   }
 
   // Called once the command ends or is interrupted.
