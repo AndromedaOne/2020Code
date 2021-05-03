@@ -26,6 +26,8 @@ public class ServoMotor {
   public void runBackward() {
     if(TeleOpCommand.getMovingForward()){
       m_servoMotor.setSpeed(-1.0);
+    }else{
+      stop();
     }
   }
 
