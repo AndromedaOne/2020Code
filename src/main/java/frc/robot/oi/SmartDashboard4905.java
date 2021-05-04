@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.CheckRomiVelocityConversionFactor;
 import frc.robot.commands.ConfigReload;
 import frc.robot.commands.DriveBackwardTimed;
+import frc.robot.commands.ResetGyro;
 import frc.robot.commands.RunRomiIntakeAtTime;
 import frc.robot.commands.ToggleLimelightLED;
 import frc.robot.commands.pidcommands.MoveUsingEncoderTester;
@@ -118,10 +119,12 @@ public class SmartDashboard4905 {
     PathGeneratorBase bouncePathGenerator4 = new TwoDDriveTrainPathGenerator("RomiBounceP4.wpilib.json",
         subsystemsContainer.getDrivetrain(), false, "RomiBouncePathP4");
 
+    ResetGyro resetGyro = new ResetGyro();
     SequentialCommandGroup bouncePath = new SequentialCommandGroup(bouncePathGenerator1.getPath(),
-        bouncePathGenerator2.getPath(), bouncePathGenerator3.getPath(), bouncePathGenerator4.getPath());
+        bouncePathGenerator2.getPath(), bouncePathGenerator3.getPath(), bouncePathGenerator4.getPath(), resetGyro);
 
     CommandBase enableIntakeAtTimes = new RunRomiIntakeAtTime(1.2, 0.7, 4.0, 8.1);
+
     ParallelCommandGroup bounceAndIntake = new ParallelCommandGroup(bouncePath, enableIntakeAtTimes);
 
     SmartDashboard.putData("RomiBounce", bounceAndIntake);

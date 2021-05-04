@@ -111,6 +111,7 @@ public class RomiGyro extends Gyro4905 {
   @Override
   public void reset() {
     // TODO Auto-generated method stub
+    m_simRateZ.reset();
 
   }
 
