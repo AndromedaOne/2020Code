@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,10 +36,10 @@ public class Robot extends TimedRobot {
   private SensorsContainer m_sensorsContainer;
   private OIContainer m_oiContainer;
   private LimeLightCameraBase limelight;
-  private ServoMotor romiShooter;
+  private PWM romiShooter;
 
   private Robot() {
-    romiShooter = new ServoMotor(4);
+    romiShooter = new PWM(4);
 
   }
 
@@ -119,7 +120,8 @@ public class Robot extends TimedRobot {
     limelight.disableLED();
     Robot.getInstance().getSubsystemsContainer().getLEDs("LEDStringOne").setRainbow();
     CommandScheduler.getInstance().schedule(new TeleOpCommand());
-    romiShooter.stop();
+    romiShooter.setSpeed(0.0);
+
   }
 
   @Override
@@ -145,7 +147,7 @@ public class Robot extends TimedRobot {
     }
     limelight.enableLED();
     m_subsystemContainer.getDrivetrain().setCoast(false);
-    romiShooter.runForward();
+    romiShooter.setSpeed(-1.0);
   }
 
   /**
@@ -185,7 +187,7 @@ public class Robot extends TimedRobot {
     if (Config4905.getConfig4905().doesHarvesterExist()) {
       Robot.getInstance().getSubsystemsContainer().getRomiIntake().runBackward();
     }
-    romiShooter.runBackward();
+    romiShooter.setSpeed(-1.0);
   }
 
   @Override
