@@ -9,13 +9,15 @@ import frc.robot.commands.DriveAndTurn;
 import frc.robot.commands.LetWingsDown;
 import frc.robot.commands.romiShooter.*;
 import frc.robot.commands.TimedCommand;
+import frc.robot.commands.TrackLineAndDriveBackwards;
 import frc.robot.commands.TrackLineAndDriveForward;
 import frc.robot.commands.romiBallMopper.MopBallMopper;
 import frc.robot.commands.romiBallMopper.ResetBallMopper;
 
 public class RomiChallenge4 extends SequentialCommandGroup {
 
-  public static final double TIME_TO_DRIVE_AND_TURN = 2.0;
+  public static final double TIME_TO_FOLLOW_LINE_TO_CENTER = 1.5;
+  public static final double TIME_TO_DRIVE_AND_TURN = 0.5;
   public static final double TIME_TO_DRIVE_FORWARD = 10.6; // in seconds
   public static final double TIME_TO_LET_WINGS_DOWN = 4.5; // in seconds
   public static final double TIME_TO_BRING_WINGS_UP = 1.4; // in seconds
@@ -34,7 +36,11 @@ public class RomiChallenge4 extends SequentialCommandGroup {
   }
 
   private CommandBase getCommandsToMoveToCenterLine() {
-    return TimedCommand.create(new DriveAndTurn(), TIME_TO_DRIVE_AND_TURN);
+    CommandBase command = new SequentialCommandGroup(
+      TimedCommand.create(new TrackLineAndDriveBackwards(0.3, "ColorSensorBackWingsUp"), TIME_TO_FOLLOW_LINE_TO_CENTER),
+      TimedCommand.create(new DriveAndTurn(), TIME_TO_DRIVE_AND_TURN)
+    );
+    return command;
   }
 
   private CommandBase getCommandsToMoveFromStartToEndOfMat() {
